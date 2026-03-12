@@ -20,17 +20,15 @@ fn expected_status_line() -> Value {
 }
 
 fn read_settings(path: &PathBuf) -> Result<Value, String> {
-    let content = fs::read_to_string(path)
-        .map_err(|e| format!("Failed to read {}: {e}", path.display()))?;
-    serde_json::from_str(&content)
-        .map_err(|e| format!("Invalid JSON in {}: {e}", path.display()))
+    let content =
+        fs::read_to_string(path).map_err(|e| format!("Failed to read {}: {e}", path.display()))?;
+    serde_json::from_str(&content).map_err(|e| format!("Invalid JSON in {}: {e}", path.display()))
 }
 
 fn write_settings(path: &PathBuf, value: &Value) -> Result<(), String> {
     let content = serde_json::to_string_pretty(value)
         .map_err(|e| format!("Failed to serialize settings: {e}"))?;
-    fs::write(path, content)
-        .map_err(|e| format!("Failed to write {}: {e}", path.display()))
+    fs::write(path, content).map_err(|e| format!("Failed to write {}: {e}", path.display()))
 }
 
 fn is_already_installed(claude_dir: &PathBuf) -> bool {
@@ -86,10 +84,7 @@ pub fn install() -> Result<(), String> {
         if let Some(status_line) = parsed.get("statusLine") {
             let backup = serde_json::json!({ "statusLine": status_line.clone() });
             write_settings(&backup_path, &backup)?;
-            println!(
-                "Backed up existing statusLine to {}",
-                backup_path.display()
-            );
+            println!("Backed up existing statusLine to {}", backup_path.display());
         }
 
         parsed

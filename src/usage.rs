@@ -122,7 +122,9 @@ fn read_cache_inner(enforce_ttl: bool) -> Option<UsageData> {
 
     if enforce_ttl {
         let modified = metadata.modified().ok()?;
-        let age = SystemTime::now().duration_since(modified).unwrap_or(CACHE_TTL);
+        let age = SystemTime::now()
+            .duration_since(modified)
+            .unwrap_or(CACHE_TTL);
         if age >= CACHE_TTL {
             return None;
         }
