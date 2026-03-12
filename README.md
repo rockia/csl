@@ -29,19 +29,45 @@ daily  ▰▰▱▱▱▱▱▱▱▱ 15%  resets in 8h
 
 ## Installation
 
+### Quick install (recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rockia/csl/main/install.sh | sh
+```
+
+Downloads a pre-built binary for your platform, installs it to `~/.claude/csl`, and configures Claude Code's statusline.
+
+### Pre-built binaries
+
+Download the latest release for your platform from [GitHub Releases](https://github.com/rockia/csl/releases/latest):
+
+| Platform | Binary |
+|----------|--------|
+| macOS (Apple Silicon) | `csl-aarch64-macos.tar.gz` |
+| macOS (Intel) | `csl-x86_64-macos.tar.gz` |
+| Linux (x86_64) | `csl-x86_64-linux.tar.gz` |
+| Linux (ARM64) | `csl-aarch64-linux.tar.gz` |
+
+```bash
+tar xzf csl-*.tar.gz
+./csl install
+```
+
+### Install with Cargo
+
+Requires [Rust](https://rustup.rs/).
+
+```bash
+cargo install --git https://github.com/rockia/csl && csl install
+```
+
 ### Build from source
 
 ```bash
+git clone https://github.com/rockia/csl && cd csl
 cargo build --release
-```
-
-### Install into Claude Code
-
-```bash
 ./target/release/csl install
 ```
-
-This copies the binary to `~/.claude/csl` and configures your `~/.claude/settings.json` statusline setting. Any existing statusline config is backed up automatically.
 
 ### Uninstall
 
