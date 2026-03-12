@@ -1,7 +1,6 @@
-/// Git repository information for statusline display.
-///
-/// Uses the `gix` crate for pure-Rust git detection without
-/// shelling out to the `git` binary.
+// Git repository information for statusline display.
+// Uses the `gix` crate for pure-Rust git detection without
+// shelling out to the `git` binary.
 
 pub struct GitInfo {
     pub branch: String,
@@ -46,10 +45,7 @@ fn detect_branch(repo: &gix::Repository) -> Option<String> {
 /// Falls back to `false` on any error to avoid blocking the statusline.
 fn detect_dirty(repo: &gix::Repository) -> Option<bool> {
     let index = repo.index_or_empty().ok()?;
-    let head_tree = match repo.head_tree_id() {
-        Ok(id) => Some(id),
-        Err(_) => None,
-    };
+    let head_tree = repo.head_tree_id().ok();
 
     // If there is no HEAD commit yet (empty repo) but the index has entries,
     // that means there are staged files — the repo is dirty.
@@ -89,7 +85,7 @@ fn detect_dirty(repo: &gix::Repository) -> Option<bool> {
 /// Recursively collect all blob entries from a tree into a flat map
 /// of path -> object id.
 fn collect_tree_entries(
-    repo: &gix::Repository,
+    _repo: &gix::Repository,
     tree: &gix::Tree<'_>,
     prefix: &mut String,
     out: &mut std::collections::HashMap<String, gix::ObjectId>,
@@ -112,7 +108,7 @@ fn collect_tree_entries(
             if let Ok(obj) = entry.object() {
                 let subtree = obj.into_tree();
                 let mut new_prefix = full_path;
-                collect_tree_entries(repo, &subtree, &mut new_prefix, out);
+                collect_tree_entries(_repo, &subtree, &mut new_prefix, out);
             }
         } else {
             out.insert(full_path, entry.oid().into());

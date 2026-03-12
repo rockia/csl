@@ -50,10 +50,10 @@ struct ApiRateLimit {
 /// 3. `~/.claude/.credentials.json` (`oauthToken` or `token` field)
 pub fn resolve_token() -> Option<String> {
     // 1. Environment variable
-    if let Ok(val) = std::env::var("CLAUDE_OAUTH_TOKEN") {
-        if !val.is_empty() {
-            return Some(val);
-        }
+    if let Ok(val) = std::env::var("CLAUDE_OAUTH_TOKEN")
+        && !val.is_empty()
+    {
+        return Some(val);
     }
 
     // 2. Keyring
@@ -88,10 +88,10 @@ fn resolve_token_credentials_file() -> Option<String> {
 
     // Try oauthToken first, then token.
     for key in &["oauthToken", "token"] {
-        if let Some(tok) = obj.get(*key).and_then(|v| v.as_str()) {
-            if !tok.is_empty() {
-                return Some(tok.to_owned());
-            }
+        if let Some(tok) = obj.get(*key).and_then(|v| v.as_str())
+            && !tok.is_empty()
+        {
+            return Some(tok.to_owned());
         }
     }
 

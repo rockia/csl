@@ -1,9 +1,5 @@
-/// Formatting utilities for statusline rendering: progress bars, ANSI colors,
-/// duration strings, and path shortening.
-
-// ---------------------------------------------------------------------------
-// ANSI color constants
-// ---------------------------------------------------------------------------
+// Formatting utilities for statusline rendering: progress bars, ANSI colors,
+// duration strings, and path shortening.
 
 pub const RESET: &str = "\x1b[0m";
 pub const GREEN: &str = "\x1b[32m";
@@ -58,9 +54,8 @@ pub fn progress_bar(percentage: f64) -> String {
     let filled = ((clamped / 100.0) * BAR_SEGMENTS as f64).round() as usize;
     let empty = BAR_SEGMENTS - filled;
 
-    let bar: String = std::iter::repeat(FILLED)
-        .take(filled)
-        .chain(std::iter::repeat(EMPTY).take(empty))
+    let bar: String = std::iter::repeat_n(FILLED, filled)
+        .chain(std::iter::repeat_n(EMPTY, empty))
         .collect();
 
     format!("{bar} {:.0}%", clamped)
