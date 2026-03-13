@@ -435,10 +435,18 @@ mod tests {
         let result = format_reset_time_long("2026-03-05T15:00:00Z");
         assert!(!result.is_empty());
         assert!(
-            result.contains("Mar") || result.contains("Jan") || result.contains("Feb")
-                || result.contains("Apr") || result.contains("May") || result.contains("Jun")
-                || result.contains("Jul") || result.contains("Aug") || result.contains("Sep")
-                || result.contains("Oct") || result.contains("Nov") || result.contains("Dec"),
+            result.contains("Mar")
+                || result.contains("Jan")
+                || result.contains("Feb")
+                || result.contains("Apr")
+                || result.contains("May")
+                || result.contains("Jun")
+                || result.contains("Jul")
+                || result.contains("Aug")
+                || result.contains("Sep")
+                || result.contains("Oct")
+                || result.contains("Nov")
+                || result.contains("Dec"),
             "Expected title-case month in: {result}"
         );
         assert!(
@@ -451,13 +459,7 @@ mod tests {
     fn test_format_reset_date_only_title_case_month() {
         let result = format_reset_date_only("2026-03-05T15:00:00Z");
         assert!(!result.is_empty());
-        assert!(
-            result.contains("Mar"),
-            "Expected 'Mar' in: {result}"
-        );
-        assert!(
-            !result.contains("mar"),
-            "Got lowercase 'mar' in: {result}"
-        );
+        assert!(result.contains("Mar"), "Expected 'Mar' in: {result}");
+        assert!(!result.contains("mar"), "Got lowercase 'mar' in: {result}");
     }
 }
