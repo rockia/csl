@@ -48,7 +48,7 @@ pub fn render(ctx: &ContextInfo, usage: Option<&UsageResponse>) -> String {
 
     // Line 1: model │ context% │ project (branch*) │ duration │ effort
     output.push_str(&ctx.model_name);
-    output.push_str(&format!(" \u{2502} \u{270d}\u{fe0f} {}%", ctx.context_pct));
+    output.push_str(&format!(" \u{2502} \u{1f4ac} {}%", ctx.context_pct));
 
     let git_info = match (&ctx.git_branch, ctx.git_dirty) {
         (Some(branch), true) => format!(" ({}*)", branch),
@@ -61,7 +61,7 @@ pub fn render(ctx: &ContextInfo, usage: Option<&UsageResponse>) -> String {
         output.push_str(&format!(" \u{2502} \u{23f1} {}", dur));
     }
 
-    output.push_str(&format!(" \u{2502} \u{25d1} {}", ctx.effort_level));
+    output.push_str(&format!(" \u{2502} \u{26a1} {}", ctx.effort_level));
 
     // Rate limit lines
     if let Some(usage) = usage {
@@ -90,7 +90,7 @@ pub fn render(ctx: &ContextInfo, usage: Option<&UsageResponse>) -> String {
                 .map(format_reset_time_long)
                 .unwrap_or_default();
             rate_lines.push(format!(
-                "weekly  {}  {} {}",
+                "weekly   {}  {} {}",
                 progress_bar(util),
                 format_pct(util),
                 reset,
@@ -138,10 +138,7 @@ fn format_reset_time_short(ts: &str) -> String {
 fn format_reset_time_long(ts: &str) -> String {
     if let Ok(dt) = ts.parse::<DateTime<Utc>>() {
         let local = dt.with_timezone(&chrono::Local);
-        format!(
-            "\u{27f3} {}",
-            local.format("%b %-d, %-I:%M%P").to_string().to_lowercase()
-        )
+        format!("\u{27f3} {}", local.format("%b %-d, %-I:%M%P"))
     } else {
         String::new()
     }
@@ -150,10 +147,7 @@ fn format_reset_time_long(ts: &str) -> String {
 fn format_reset_date_only(ts: &str) -> String {
     if let Ok(dt) = ts.parse::<DateTime<Utc>>() {
         let local = dt.with_timezone(&chrono::Local);
-        format!(
-            "\u{27f3} {}",
-            local.format("%b %-d").to_string().to_lowercase()
-        )
+        format!("\u{27f3} {}", local.format("%b %-d"))
     } else {
         String::new()
     }
@@ -433,5 +427,39 @@ mod tests {
         // Line 0: info line, Line 1: blank, Lines 2+: rate lines
         assert!(lines.len() >= 4);
         assert!(lines[1].is_empty());
+    }
+
+    #[test]
+    fn test_format_reset_time_long_title_case_month() {
+        // 2026-03-05T15:00:00Z → should contain "Mar" not "mar"
+        let result = format_reset_time_long("2026-03-05T15:00:00Z");
+        assert!(!result.is_empty());
+        assert!(
+            result.contains("Mar")
+                || result.contains("Jan")
+                || result.contains("Feb")
+                || result.contains("Apr")
+                || result.contains("May")
+                || result.contains("Jun")
+                || result.contains("Jul")
+                || result.contains("Aug")
+                || result.contains("Sep")
+                || result.contains("Oct")
+                || result.contains("Nov")
+                || result.contains("Dec"),
+            "Expected title-case month in: {result}"
+        );
+        assert!(
+            !result.contains("mar") && !result.contains("jan") && !result.contains("feb"),
+            "Got lowercase month in: {result}"
+        );
+    }
+
+    #[test]
+    fn test_format_reset_date_only_title_case_month() {
+        let result = format_reset_date_only("2026-03-05T15:00:00Z");
+        assert!(!result.is_empty());
+        assert!(result.contains("Mar"), "Expected 'Mar' in: {result}");
+        assert!(!result.contains("mar"), "Got lowercase 'mar' in: {result}");
     }
 }
