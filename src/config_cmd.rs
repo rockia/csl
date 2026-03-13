@@ -1,4 +1,5 @@
 use crate::config::{DisplayConfig, ITEM_NAMES, config_path};
+use dialoguer::MultiSelect;
 use std::fs;
 
 const USAGE: &str = "\
@@ -18,10 +19,35 @@ pub fn run_config(args: &[String]) {
         Some("list") => cmd_list(),
         Some("set") => cmd_set(&args[1..]),
         Some("reset") => cmd_reset(),
-        _ => {
-            eprintln!("{}", USAGE);
-            std::process::exit(1);
-        }
+        _ => cmd_interactive(),
+    }
+}
+
+fn cmd_interactive() {
+    let cfg = DisplayConfig::load();
+    let defaults: Vec<bool> = ITEM_NAMES.iter().map(|n| cfg.get(n).unwrap_or(true)).collect();
+
+    let selections = match MultiSelect::new()
+        .with_prompt("Display items (space to toggle, enter to save)")
+        .items(ITEM_NAMES)
+        .defaults(&defaults)
+        .interact_opt()
+    {
+        Ok(Some(s)) => s,
+        _ => return, // cancelled
+    };
+
+    let mut new_cfg = DisplayConfig::default();
+    for name in ITEM_NAMES {
+        new_cfg.set(name, false);
+    }
+    for i in selections {
+        new_cfg.set(ITEM_NAMES[i], true);
+    }
+
+    if let Err(e) = new_cfg.save() {
+        eprintln!("Error: failed to save config: {}", e);
+        std::process::exit(1);
     }
 }
 
